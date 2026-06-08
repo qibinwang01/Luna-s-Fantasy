@@ -7,9 +7,13 @@ public class Potion : MonoBehaviour
     public GameObject effectGo;
     public AudioClip pickSound;
     private void OnTriggerEnter2D(Collider2D collision) {
-        
+
         //Debug.Log("血瓶被触碰");
         //LunaController lunaController=collision.GetComponent<LunaController>();
+        if (!collision.CompareTag("Luna"))
+        {
+            return;
+        }
         if (GameManager.Instance.lunaCurrentHP < GameManager.Instance.lunaHP)
             {
                 GameManager.Instance.AddOrDecreaseHP(40);
@@ -20,10 +24,4 @@ public class Potion : MonoBehaviour
             }
         
     }
-    // private void OnTriggerStay(Collider other) {
-        
-    // }
-    // private void OnTriggerExit2D(Collider2D other) {
-        
-    // }
 }

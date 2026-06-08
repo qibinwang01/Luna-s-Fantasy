@@ -68,6 +68,7 @@ public class LunaController : MonoBehaviour
             }
         }
         animator.SetFloat("MoveValue", moveScale);
+        //按下空格进行交互
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Talk();
@@ -100,6 +101,7 @@ public class LunaController : MonoBehaviour
     }
     public void Talk()
     {
+        //获取玩家位置为圆心半径为0.5f的圆内属于NPC的物体碰撞器
         Collider2D collider=Physics2D.OverlapCircle(rb.position,0.5f,LayerMask.GetMask("NPC"));
         if (collider != null)
         {
@@ -138,6 +140,7 @@ public class LunaController : MonoBehaviour
     public void PetTheDog()
     {
         animator.CrossFade("PetTheDog",0);
+        //摸狗的时候强制指定露娜位置防止出现位置错乱
         transform.position=new Vector3(-1.42f,-7.25f,0);
     }
     

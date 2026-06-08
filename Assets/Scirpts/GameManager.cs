@@ -10,13 +10,10 @@ public class GameManager : MonoBehaviour
     public float lunaCurrentHP;//当前生命值
     public float lunaMP;
     public float lunaCurrentMP;
-
     public int monsterCurrentHP;
-
     public GameObject battleGo;//战斗场景
-
     public int dialogInfos;
-    public bool CanControlLuna=true;
+    public bool CanControlLuna = true;
     public bool hasPetTheDog;
     public int candleNum;
     public int killNum;
@@ -30,9 +27,8 @@ public class GameManager : MonoBehaviour
     public float battleEnterCooldown = 1.5f;
     private float nextCanEnterBattleTime = 0f;
     public GameObject nalaHighlight;
-    //public GameObject nalaHighlight;
 
-    
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -47,10 +43,11 @@ public class GameManager : MonoBehaviour
         lunaCurrentMP = lunaMP;
         monsterCurrentHP = 50;
     }
-    private void Start() {
+    private void Start()
+    {
         UpdateTaskText();
     }
-    private void  Update() 
+    private void Update()
     {
         if (!enterBattle)
         {
@@ -60,18 +57,18 @@ public class GameManager : MonoBehaviour
             }
             if (lunaCurrentHP < 100)
             {
-                AddOrDecreaseHP(Time.deltaTime); 
+                AddOrDecreaseHP(Time.deltaTime);
             }
         }
     }
 
-    public void EnterOrExitBattle(bool enter = true,int addKillNum=0)
+    public void EnterOrExitBattle(bool enter = true, int addKillNum = 0)
     {
         UIManager.Instance.ShowOrHideBattlePanle(enter);
         battleGo.SetActive(enter);
         if (!enter)
         {
-            killNum+=addKillNum;
+            killNum += addKillNum;
             if (addKillNum > 0)
             {
                 DestroyMonster();
@@ -80,20 +77,22 @@ public class GameManager : MonoBehaviour
                     CompleteKillTask();
                 }
             }
-            monsterCurrentHP=60;
+            monsterCurrentHP = 60;
+            //战斗结束播放普通音乐
             PlayMusic(normalClip);
+            //Luna死亡
             if (lunaCurrentHP <= 0)
             {
-                lunaCurrentHP=100;
-                lunaCurrentMP=0;
-                battleMonsterGo.transform.position+=new Vector3(0,2,0);
+                lunaCurrentHP = 100;
+                lunaCurrentMP = 0;
+                battleMonsterGo.transform.position += new Vector3(0, 2, 0);
             }
         }
         else
         {
             PlayMusic(battleClip);
         }
-        enterBattle=enter;
+        enterBattle = enter;
         UpdateTaskText();
     }
     /// <summary>
@@ -131,20 +130,16 @@ public class GameManager : MonoBehaviour
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public bool CanUseMP(int value)
-    {
-        return lunaCurrentMP >= value ? false : true;
-    }
     public bool HasEnoughMP(int value)
     {
-        return lunaCurrentMP>=value;
+        return lunaCurrentMP >= value;
     }
     public int MonsterHPDecrease(int value)
     {
         monsterCurrentHP += value;
         if (monsterCurrentHP <= 0)
         {
-            monsterCurrentHP=0;
+            monsterCurrentHP = 0;
         }
         return monsterCurrentHP;
     }
@@ -171,13 +166,13 @@ public class GameManager : MonoBehaviour
     }
     public void SetMonster(GameObject go)
     {
-        battleMonsterGo=go;
+        battleMonsterGo = go;
     }
     public void PlayMusic(AudioClip audioClip)
     {
         if (audioSource.clip != audioClip)
         {
-            audioSource.clip=audioClip;
+            audioSource.clip = audioClip;
             audioSource.Play();
         }
     }
@@ -255,6 +250,7 @@ public class GameManager : MonoBehaviour
         //新增高亮显示
         UpdateGuideHighlight();
     }
+    //防止频繁发生战斗设置冷却时间
     public void StartBattleEnterCooldown()
     {
         nextCanEnterBattleTime = Time.time + battleEnterCooldown;

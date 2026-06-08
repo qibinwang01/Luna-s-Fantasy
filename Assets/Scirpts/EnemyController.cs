@@ -49,6 +49,7 @@ public class EnemyController : MonoBehaviour
     }
     private void Update()
     {
+        //实现怪物的来回移动
         if (GameManager.Instance.enterBattle)
         {
             return ;

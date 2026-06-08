@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Candle : MonoBehaviour
 {
-    // Start is called before the first frame update
     public GameObject effectGo;
     public AudioClip pickClip;
 

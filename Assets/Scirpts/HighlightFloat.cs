@@ -16,6 +16,7 @@ public class HighlightFloat : MonoBehaviour
         startLocalPos = transform.localPosition;
     }
 
+    //动态显示Nala头顶的感叹号
     private void OnEnable()
     {
         transform.localPosition = startLocalPos;

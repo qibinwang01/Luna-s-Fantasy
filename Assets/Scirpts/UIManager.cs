@@ -34,7 +34,7 @@ public class UIManager : MonoBehaviour
         // {
         //     startTalkPanelCoroutine = StartCoroutine(HideStartTalkPanel());
         // }
-         // 给对话面板上的 Button 添加点击事件
+        // 给对话面板上的 Button 添加点击事件
         if (TalkPanelGO != null)
         {
             talkPanelButton = TalkPanelGO.GetComponent<Button>();
@@ -106,6 +106,7 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
+                    //显示Nala
                     characterImage.sprite = characterSprites[1];
                 }
                 characterImage.SetNativeSize();
