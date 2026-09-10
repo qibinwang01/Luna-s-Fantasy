@@ -124,6 +124,7 @@ public class TaskGuideManager : MonoBehaviour
         for(int i = 0; i < targets.Count; i++)
         {
             Transform target=targets[i];
+            //当之前的物品被拾取之后就会被销毁这个时候列表中该元素会显示为空
             if (target == null)
             {
                 continue;
@@ -158,7 +159,7 @@ public class TaskGuideManager : MonoBehaviour
             arrowPos.y,
             guideArrow.transform.position.z
         );
-        //让箭头自身朝向目标
+        //让箭头自身朝向目标，Mathf.Atan2(direction.y,direction.x)计算弧度*Mathf.Rad2Deg转换成角度，加上默认的角度偏差
         float angle=Mathf.Atan2(direction.y,direction.x)*Mathf.Rad2Deg+arrowAngleOffset;
         guideArrow.transform.rotation=Quaternion.Euler(0,0,angle);
     }

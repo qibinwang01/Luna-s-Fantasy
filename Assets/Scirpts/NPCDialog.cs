@@ -127,7 +127,13 @@ public class NPCDialog : MonoBehaviour
             }
             else
             {
+                int prevInfo = GameManager.Instance.dialogInfos;
                 GameManager.Instance.dialogInfos++;
+                // 蜡烛任务完成时（dialogInfos 4 → 5），清空背包里的 Candle
+                if (prevInfo == 4)
+                {
+                    GameManager.Instance.CompleteCandleTask();
+                }
             }
             if (GameManager.Instance.dialogInfos == 6)
             {

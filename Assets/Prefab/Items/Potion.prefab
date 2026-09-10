@@ -144,3 +144,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   effectGo: {fileID: 1714363213055105675, guid: 5109a6bc497ef454798afaa86701e22f, type: 3}
+  pickSound: {fileID: 8300000, guid: 2e32ae780158fba45b20c7b73f7fedd8, type: 3}
+  itemSO: {fileID: 11400000, guid: 733e0be3856fc594093a038c424a4a71, type: 2}

@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
     private float nextCanEnterBattleTime = 0f;
     public GameObject nalaHighlight;
 
-
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -178,10 +177,17 @@ public class GameManager : MonoBehaviour
     }
     public void PlaySound(AudioClip audioClip)
     {
-        if (audioClip)
+        if (audioClip == null)
         {
-            audioSource.PlayOneShot(audioClip);
+            // prefab 上的音效引用丢失 —— 这种情况下静默返回，不污染游戏体验
+            return;
         }
+        if (audioSource == null)
+        {
+            Debug.LogError("[GameManager.PlaySound] audioSource 字段没在 Inspector 拖入！");
+            return;
+        }
+        audioSource.PlayOneShot(audioClip);
     }
     public void UpdateTaskText()
     {
@@ -354,6 +360,19 @@ public class GameManager : MonoBehaviour
             npc.CompleteKillTask();
         }
         UpdateTaskText();
+    }
+
+    /// <summary>
+    /// 蜡烛任务完成时调用：从背包里清掉所有 Candle（task=5 根，全清）。
+    /// 由 NPCDialog 在 dialogInfos 从 4 → 5 的转换点调用。
+    /// </summary>
+    public void CompleteCandleTask()
+    {
+        // 通过单例访问 InventoryManager（之前 Start 里 Find 缓存的引用，已删除）
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.ClearItemByName("Candle", candleNum);
+        }
     }
 }
 
