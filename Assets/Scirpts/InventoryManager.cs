@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,15 @@ public class InventoryManager : MonoBehaviour
 {
     // 单例（和 GameManager.Instance 对齐），ItemSlot.Start 不再用 GameObject.Find
     public static InventoryManager Instance;
+
+    /// <summary>
+    /// 背包内容变化时广播一次：拾取 / 清空 / 丢弃。
+    /// 只在"物品总数可能变化"时触发；交换、移动、合并不改变总数，所以不触发。
+    ///
+    /// 订阅方式：在 OnEnable 里 += ，在 OnDisable 里 -=（成对写，避免对象销毁后还被调用）。
+    /// 这样订阅方（任务系统、UI）不需要认识 InventoryManager 的调用方。
+    /// </summary>
+    public static event Action OnInventoryChanged;
 
     public GameObject InventoryMenu;
     public ItemSlot[] itemSlot;
@@ -113,6 +123,7 @@ public class InventoryManager : MonoBehaviour
         }
 
         // 返回还没放下的数量（>0 表示背包满了，拾取失败）
+        RaiseInventoryChanged();
         return remaining;
     }
 
@@ -143,9 +154,10 @@ public class InventoryManager : MonoBehaviour
                 remaining = 0;
             }
         }
+        RaiseInventoryChanged();
         return remaining;
     }
-    
+
     public void DeselectedAllSlots()
     {
         for(int i = 0; i < itemSlot.Length; i++)
@@ -379,7 +391,7 @@ public class InventoryManager : MonoBehaviour
 
         // 丢弃方向：相对玩家的随机单位向量 × dropDistance
         // 这样多个物品不会完全重叠，也避免触发器立即拾回
-        Vector2 dir = Random.insideUnitCircle;
+        Vector2 dir = UnityEngine.Random.insideUnitCircle;
         if (dir.sqrMagnitude < 0.01f)
         {
             dir = Vector2.right;
@@ -402,5 +414,40 @@ public class InventoryManager : MonoBehaviour
         {
             slot.qualityText.text = slot.quality.ToString();
         }
+
+        RaiseInventoryChanged();
+    }
+
+    /// <summary>
+    /// 统计背包里某种物品的总数量（跨格子求和）。
+    /// 这是"背包里到底有几根蜡烛"的唯一真相来源 —— 任务进度和任务完成判定都从这里读，
+    /// 不再另外维护一份计数，避免两边对不上。
+    /// </summary>
+    /// <param name="itemName">物品 ID（对应 ItemSO.itemId，例如 "Candle"）</param>
+    public int GetItemCount(string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName) || itemSlot == null)
+        {
+            return 0;
+        }
+
+        int total = 0;
+        for (int i = 0; i < itemSlot.Length; i++)
+        {
+            ItemSlot slot = itemSlot[i];
+            if (slot != null && slot.ItemName == itemName)
+            {
+                total += slot.quality;
+            }
+        }
+        return total;
+    }
+
+    /// <summary>
+    /// 内部使用：内容真的变了才广播。所有会改变物品总数的方法末尾都要调用一次。
+    /// </summary>
+    private void RaiseInventoryChanged()
+    {
+        OnInventoryChanged?.Invoke();
     }
 }

@@ -30,7 +30,9 @@ public class Candle : MonoBehaviour
             return;
         }
 
-        GameManager.Instance.candleNum++;
+        // 这里原本有一句 GameManager.Instance.candleNum++，现已删除：
+        // 任务进度改成直接从背包里数（GameManager.candleNum 会去问 InventoryManager）。
+        // 好处：背包满、物品没真的进包时，进度不会虚增；丢弃蜡烛后进度也会自己减回去。
         GameManager.Instance.PlaySound(pickClip);
         Instantiate(effectGo, transform.position, Quaternion.identity);
 

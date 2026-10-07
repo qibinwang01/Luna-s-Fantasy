@@ -15,7 +15,23 @@ public class GameManager : MonoBehaviour
     public int dialogInfos;
     public bool CanControlLuna = true;
     public bool hasPetTheDog;
-    public int candleNum;
+
+    /// <summary>
+    /// 背包里「蜡烛」的物品 ID，必须与 Candle 上 ItemSO.itemId 保持一致。
+    /// </summary>
+    [Tooltip("任务道具「蜡烛」的物品 ID，需与 Candle 上的 ItemSO.itemId 一致")]
+    public string candleItemId = "Candle";
+
+    /// <summary>
+    /// 当前已收集的蜡烛数量 —— 直接去背包里数，不再单独存一份计数。
+    /// 以前这里是个 public int 字段，和背包里的 Candle 物品各记一份，
+    /// 会出现"背包满了没捡进去、任务进度却加了 1"这类两边对不上的问题。
+    /// 现在唯一真相在背包里，任务文本 / 任务指引 / 完成判定全部从这里读。
+    /// </summary>
+    public int candleNum => InventoryManager.Instance != null
+        ? InventoryManager.Instance.GetItemCount(candleItemId)
+        : 0;
+
     public int killNum;
     public GameObject monsterGo;
     public NPCDialog npc;
@@ -42,6 +58,27 @@ public class GameManager : MonoBehaviour
         lunaCurrentMP = lunaMP;
         monsterCurrentHP = 50;
     }
+
+    /// <summary>
+    /// 订阅背包变化事件：拾取 / 丢弃 / 清空蜡烛之后，任务文本和任务指引会自动刷新。
+    /// 以前靠每个调用方记得手动调 UpdateTaskText() —— "丢弃蜡烛"那条路径就漏掉了，
+    /// 导致任务栏还显示旧进度。订阅事件之后，任何来源的变化都能同步。
+    /// </summary>
+    private void OnEnable()
+    {
+        InventoryManager.OnInventoryChanged += HandleInventoryChanged;
+    }
+
+    private void OnDisable()
+    {
+        InventoryManager.OnInventoryChanged -= HandleInventoryChanged;
+    }
+
+    private void HandleInventoryChanged()
+    {
+        UpdateTaskText();
+    }
+
     private void Start()
     {
         UpdateTaskText();
@@ -84,6 +121,7 @@ public class GameManager : MonoBehaviour
             {
                 lunaCurrentHP = 100;
                 lunaCurrentMP = 0;
+                //防止复活再次进入战斗
                 battleMonsterGo.transform.position += new Vector3(0, 2, 0);
             }
         }
@@ -371,7 +409,8 @@ public class GameManager : MonoBehaviour
         // 通过单例访问 InventoryManager（之前 Start 里 Find 缓存的引用，已删除）
         if (InventoryManager.Instance != null)
         {
-            InventoryManager.Instance.ClearItemByName("Candle", candleNum);
+            // candleNum 来自背包本身，所以"清多少"和"背包里有多少"一定是一致的
+            InventoryManager.Instance.ClearItemByName(candleItemId, candleNum);
         }
     }
 }
