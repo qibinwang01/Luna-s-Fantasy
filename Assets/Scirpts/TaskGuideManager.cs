@@ -19,7 +19,7 @@ public class TaskGuideManager : MonoBehaviour
     private float timer;
     private string lastTaskState = "";
     //箭头离luna的距离
-    public float arrowDistance=0.7f;
+    public float arrowDistance = 0.7f;
     // 箭头圆心偏移，如果你想以 Luna 脚下为圆心，可以调 Y
     public Vector2 arrowCenterOffset = new Vector2(0, -0.2f);
 
@@ -35,7 +35,7 @@ public class TaskGuideManager : MonoBehaviour
         {
             lastTaskState = "";
         }
-        
+
     }
 
     // Update is called once per frame
@@ -46,37 +46,37 @@ public class TaskGuideManager : MonoBehaviour
             HideArrow();
             return;
         }
-        if (luna == null||guideArrow==null)
+        if (luna == null || guideArrow == null)
         {
-            return ;
+            return;
         }
         // 战斗中、对话中、不能控制 Luna 时，不显示任务指引
         if (GameManager.Instance.enterBattle || !GameManager.Instance.CanControlLuna)
         {
             HideArrow();
-            return ;
+            return;
         }
         //如果任务发生变化重新计时
-        string currentState=GetTaskStateKey();
+        string currentState = GetTaskStateKey();
         if (currentState != lastTaskState)
         {
-            lastTaskState=currentState;
-            timer=0f;
+            lastTaskState = currentState;
+            timer = 0f;
             HideArrow();
             return;
         }
-        Transform target=GetCurrentNearestTarget();
+        Transform target = GetCurrentNearestTarget();
         if (target == null)
         {
             HideArrow();
-            timer=0f;
+            timer = 0f;
             return;
         }
-        timer+=Time.deltaTime;
+        timer += Time.deltaTime;
         if (timer < showDelay)
         {
             HideArrow();
-            return ;
+            return;
         }
         ShowArrowToTarget(target);
     }
@@ -94,12 +94,12 @@ public class TaskGuideManager : MonoBehaviour
     }
     public Transform GetCurrentNearestTarget()
     {
-         if (GameManager.Instance == null)
+        if (GameManager.Instance == null)
         {
             return null;
         }
 
-        int diologIndex=GameManager.Instance.dialogInfos;
+        int diologIndex = GameManager.Instance.dialogInfos;
         //小狗任务指向小狗
         if (diologIndex == 2 && !GameManager.Instance.hasPetTheDog)
         {
@@ -119,11 +119,11 @@ public class TaskGuideManager : MonoBehaviour
     }
     public Transform GetNearestActiveTarget(List<Transform> targets)
     {
-        Transform nearest=null;
-        float nearestDistance=float.MaxValue;
-        for(int i = 0; i < targets.Count; i++)
+        Transform nearest = null;
+        float nearestDistance = float.MaxValue;
+        for (int i = 0; i < targets.Count; i++)
         {
-            Transform target=targets[i];
+            Transform target = targets[i];
             //当之前的物品被拾取之后就会被销毁这个时候列表中该元素会显示为空
             if (target == null)
             {
@@ -133,11 +133,11 @@ public class TaskGuideManager : MonoBehaviour
             {
                 continue;
             }
-            float distance=Vector2.Distance(luna.position,target.position);
+            float distance = Vector2.Distance(luna.position, target.position);
             if (distance < nearestDistance)
             {
-                nearestDistance=distance;
-                nearest=target;
+                nearestDistance = distance;
+                nearest = target;
             }
         }
         return nearest;
@@ -145,23 +145,23 @@ public class TaskGuideManager : MonoBehaviour
     public void ShowArrowToTarget(Transform target)
     {
         guideArrow.SetActive(true);
-        Vector2 centerPos=(Vector2)luna.position+arrowCenterOffset;
-        Vector2 direction=(Vector2)target.position-centerPos;
+        Vector2 centerPos = (Vector2)luna.position + arrowCenterOffset;
+        Vector2 direction = (Vector2)target.position - centerPos;
         if (direction.sqrMagnitude <= 0.001f)
         {
             HideArrow();
             return;
         }
         direction.Normalize();
-        Vector2 arrowPos=centerPos+direction*arrowDistance;
-        guideArrow.transform.position=new Vector3(
+        Vector2 arrowPos = centerPos + direction * arrowDistance;
+        guideArrow.transform.position = new Vector3(
             arrowPos.x,
             arrowPos.y,
             guideArrow.transform.position.z
         );
         //让箭头自身朝向目标，Mathf.Atan2(direction.y,direction.x)计算弧度*Mathf.Rad2Deg转换成角度，加上默认的角度偏差
-        float angle=Mathf.Atan2(direction.y,direction.x)*Mathf.Rad2Deg+arrowAngleOffset;
-        guideArrow.transform.rotation=Quaternion.Euler(0,0,angle);
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + arrowAngleOffset;
+        guideArrow.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
     public void HideArrow()
     {

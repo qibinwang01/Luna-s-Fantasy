@@ -12,6 +12,7 @@ public class JumpArea : MonoBehaviour
         {
             LunaController lunaController= collision.transform.GetComponent<LunaController>();
             lunaController.Jump(true);
+            //判断那个地点离角色更近，从近点跳到远点
             float distanceA=Vector3.Distance(lunaController.transform.position,JumpA.transform.position);
             float distanceB=Vector3.Distance(lunaController.transform.position,JumpB.transform.position);
             Transform target;
@@ -27,6 +28,7 @@ public class JumpArea : MonoBehaviour
                 //从A跳到B
                 target=JumpB;
             }
+            //这里有个注意点要注意的是，角色的跳跃动画和DoTween动画都是0.5秒两者是同步进行的
             lunaController.transform.DOMove(target.position,0.5f).OnComplete(()=>{EndJump(lunaController);});
             Transform LunaLocalTran=lunaController.transform.GetChild(0);
             Sequence sequence=DOTween.Sequence();

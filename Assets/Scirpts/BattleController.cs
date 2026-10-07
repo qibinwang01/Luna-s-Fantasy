@@ -84,11 +84,11 @@ public class BattleController : MonoBehaviour
         //怪兽移动到Luna身前
         MonsterTran.DOLocalMove(LunaInitPos - new Vector3(1.5f, 0, 0), 0.5f);
         yield return new WaitForSeconds(0.5f);
+        //怪兽短距离冲刺一下
         MonsterTran.DOLocalMove(LunaInitPos, 0.1f).OnComplete(
-            () =>
-        {
+            () =>{
             GameManager.Instance.PlaySound(monsterSound);
-            //怪兽短距离冲刺一下
+            //冲刺结束之后回到原来位置
             MonsterTran.DOLocalMove(LunaInitPos - new Vector3(1.5f, 0, 0), 0.1f);
             LunaAnimator.CrossFade("Hit", 0);
             GameManager.Instance.PlaySound(hitSound);
@@ -115,6 +115,7 @@ public class BattleController : MonoBehaviour
         MonsterTran.DOLocalMove(LunaInitPos, 0.1f).OnComplete(
             () =>
         {
+            GameManager.Instance.PlaySound(monsterSound);
             MonsterTran.DOLocalMove(LunaInitPos - new Vector3(1.5f, 0, 0), 0.1f);
             //防御时受击有一个后退效果
             LunaTran.DOLocalMove(LunaInitPos + new Vector3(0.5f, 0, 0), 0.2f).OnComplete(
@@ -130,18 +131,17 @@ public class BattleController : MonoBehaviour
             {
                 //UIManager.Instance.ShowOrHideBattlePanle(true);
                 FinishAction();
-                GameManager.Instance.PlaySound(monsterSound);
             });
     }
     IEnumerator PerformSkillLogic()
     {
         UIManager.Instance.ShowOrHideBattlePanle(false);
         LunaAnimator.CrossFade("Skill", 0);
+        GameManager.Instance.PlaySound(lunaAttackSound);
         GameManager.Instance.AddOrDecreaseMP(-30);
         yield return new WaitForSeconds(0.25f);
         GameObject go = Instantiate(skillEffectGo, MonsterTran);
-        go.transform.localPosition = Vector3.zero;
-        GameManager.Instance.PlaySound(lunaAttackSound);
+        go.transform.localPosition = Vector3.zero; 
         GameManager.Instance.PlaySound(skillSound);
         yield return new WaitForSeconds(0.4F);
         MonsterSR.DOFade(0.4f, 0.2f).OnComplete(

@@ -8,7 +8,6 @@ public class LunaController : MonoBehaviour
 {
     private Rigidbody2D rb;
     private float movespeed = 4;
-    
     private Animator animator;
     private Vector2 lookDirection = new Vector2(0, -1);
     private float moveScale;
@@ -97,6 +96,7 @@ public class LunaController : MonoBehaviour
     public void Jump(bool start)
     {
         animator.SetBool("Jump",start);
+        //防止动画和刚体组件冲突
         rb.simulated=!start;
     }
     public void Talk()
